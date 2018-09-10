@@ -90,3 +90,31 @@ function translation(string $name = '', array $params = []): string
     }
     return $ret;
 }
+
+
+/**
+ * 记录一个错误信息,在下一个页面显示
+ * @param $msg string
+ */
+function error(string $msg): void
+{
+    Message::setError($msg);
+}
+
+/**
+ * 记录一个成功信息,在下一个页面显示
+ * @param $msg string
+ */
+function success(string $msg): void
+{
+    Message::setSuccess($msg);
+}
+
+/**
+ * 记录一个提示信息,在下一个页面显示
+ * @param $msg string
+ */
+function info(string $msg): void
+{
+    Message::setInfo($msg);
+}
