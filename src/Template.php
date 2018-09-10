@@ -401,7 +401,7 @@ final class Template
             '/{js}/U' => self::pathJs(),
 
             // 6.通用,视图单元类的静态方法,便于开发者扩展
-            '/{:(.*?\))}/U' => $s . '=ViewUnit::\1' . $e,
+            '/{:(.*?\))}/U' => $s . '=icePHP\ViewUnit::\1' . $e,
 
             // 7.判断IE浏览器
             '/{ifIE}/' => $b . 'if(' . (self::isIE() ? '1' : '0') . '):' . $e,
@@ -454,10 +454,10 @@ final class Template
             '/{include\b(\(.*?\))}/U' => $b . 'icePHP\display\1' . $e,
 
             // 22.包含JS文件
-            '/{js(\(.*?\))}/U' => $s . '=Template::js\1' . $e,
+            '/{js(\(.*?\))}/U' => $s . '=icePHP\Template::js\1' . $e,
 
             // 23.包含CSS文件
-            '/{css(\(.*?\))}/U' => $s . '=Template::css\1' . $e,
+            '/{css(\(.*?\))}/U' => $s . '=icePHP\Template::css\1' . $e,
 
             // 24.default 默认值
             '/{default\((\$[^\,]*?)\,([^\)]*?)\)}/U' => "{$s}=!empty(\\1)?\\1:\\2{$e}",
