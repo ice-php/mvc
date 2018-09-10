@@ -1,16 +1,20 @@
 {
-  "name": "ice-php/template",
-  "description": "模板解析",
+  "name": "ice-php/mvc",
+  "description": "控制器,模型,视图相关",
   "keywords": [
     "icePHP",
     "template",
-    "view"
+    "view",
+    "model",
+    "controller",
+    "request",
+    "action"
   ],
-  "homepage": "https://github.com/ice-php/template",
+  "homepage": "https://github.com/ice-php/mvc",
   "type": "composer",
   "license": "MIT",
   "support": {
-    "source": "https://github.com/ice-php/template"
+    "source": "https://github.com/ice-php/mvc"
   },
   "authors": [
     {
