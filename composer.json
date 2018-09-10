@@ -27,7 +27,10 @@
     "ice-php/write": "dev-master",
     "ice-php/cache": "dev-master",
     "ice-php/config": "dev-master",
-    "ice-php/functions": "dev-master"
+    "ice-php/functions": "dev-master",
+    "ice-php/router": "dev-master",
+    "ice-php/debug": "dev-master",
+    "ice-php/table": "dev-master"
   },
   "minimum-stability": "dev",
   "autoload": {
