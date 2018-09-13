@@ -128,32 +128,42 @@ final class Template
 
     // 临时记录当前请求的模块名称,免得总是计算
     private static $module;
-    public static function setModule(string $module):void{
-        self::$module=$module;
+
+    public static function setModule(string $module): void
+    {
+        self::$module = $module;
     }
 
     //记录当前控制器
     private static $controller;
-    public static function setController(string $controller):void{
-        self::$controller=$controller;
+
+    public static function setController(string $controller): void
+    {
+        self::$controller = $controller;
     }
 
     //记录当前动作
     private static $action;
-    public static function setAction(string $action):void{
-        self::$action=$action;
+
+    public static function setAction(string $action): void
+    {
+        self::$action = $action;
     }
 
     //记录全部模块名称
     private static $modules;
-    public static function setModules(array $modules):void{
-        self::$modules=$modules;
+
+    public static function setModules(array $modules): void
+    {
+        self::$modules = $modules;
     }
 
     //系统根目录
     private static $root;
-    public static function setRoot(string $roor):void{
-        self::$root=$roor;
+
+    public static function setRoot(string $roor): void
+    {
+        self::$root = $roor;
     }
 
     /**
@@ -291,13 +301,13 @@ final class Template
 
         // 如果未提供视图文件名,则根据当前模块,控制器和当前动作生成
         if (!$view) {
-            $view = self::$controller. '/' . self::$action;
+            $view = self::$controller . '/' . self::$action;
         } elseif (strpos($view, '/') === false) {
             // 替换路径分隔符
             $view = str_replace('\\', '/', trim($view, '/'));
 
             // 只提供了动作名称,则附加当前控制器名称
-            $view = self::$controller. '/' . $view;
+            $view = self::$controller . '/' . $view;
         }
 
         //当前模块
@@ -318,11 +328,11 @@ final class Template
             $compiled = self::$root . 'run/view_c/' . $view . '.php';
         } else {
             // 实在没找到
-            throw new TemplateException('模板文件不存在:'.$view,TemplateException::TEMPLATE_NOT_FOUND);
+            throw new TemplateException('模板文件不存在:' . $view, TemplateException::TEMPLATE_NOT_FOUND);
         }
 
         // 如果关闭了模板自动编译的开关,则不自动编译,这个太不常用了.
-        if (config('system', 'template')) {
+        if (configDefault(true, 'system', 'template')) {
             self::compile($source, $compiled);
         }
 
@@ -380,7 +390,7 @@ final class Template
 
         // 不允许出现PHP代码
         if (strpos($source, $s) !== false) {
-            throw new TemplateException('模板中不允许直接使用PHP:'.$view,TemplateException::PHP_DISABLED);
+            throw new TemplateException('模板中不允许直接使用PHP:' . $view, TemplateException::PHP_DISABLED);
         }
 
         // 要替换 的内容
@@ -500,7 +510,7 @@ final class Template
      */
     static public function pathRoot(): string
     {
-        return rtrim(config('system', 'host'), '/\\');
+        return rtrim(configDefault('/', 'system', 'host'), '/\\');
     }
 
     /**
@@ -524,7 +534,7 @@ final class Template
      */
     static private function pathUpload(): string
     {
-        return self::pathRoot() . Config::get('upload', 'path');
+        return self::pathRoot() . configDefault('/upload/','upload', 'path');
     }
 
     /**
@@ -595,7 +605,7 @@ final class Template
 
             // 调试模式下,加上一个版本号
             if (isDebug()) {
-                $url .= '?v=' . config('system', 'version');
+                $url .= '?v=' . configDefault('0','system', 'version');
             }
 
             // 返回HTML包含CSS的语法
@@ -701,7 +711,7 @@ final class Template
 
             // 调试模式,加上版本号
             if (isDebug()) {
-                $url .= '?v=' . config('system', 'version');
+                $url .= '?v=' . configDefault('0','system', 'version');
             }
 
             // 构造 HTML中的JS包含语法

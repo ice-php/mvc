@@ -729,7 +729,7 @@ abstract class Controller
      */
     private function codeError(string $v): bool
     {
-        $special = config('anti', 'utf-8');
+        $special = configDefault('', 'anti', 'utf-8');
         return iconv('utf-8', 'gb2312', str_replace($special, '', $v)) === false
             and iconv('utf-8', 'gbk', str_replace($special, '', $v)) === false;
     }
@@ -1025,7 +1025,7 @@ abstract class Controller
         }
 
         // 如果是行对象或结果集对象,调用方法转为数组
-        if (is_object($data) and method_exists($data,'toArray')) {
+        if (is_object($data) and method_exists($data, 'toArray')) {
             $data = $data->toArray();
         }
 

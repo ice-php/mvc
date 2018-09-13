@@ -9,7 +9,7 @@ namespace icePHP;
  * @param array $params 模板参数数组
  * @param boolean $return 要求模板解析结果 返回而不是输出
  * @return string 模板解析结果或空
- * @throws \Exception
+ * @throws TemplateException
  */
 function display(string $file = null, array $params = [], bool $return = false): string
 {

@@ -11,4 +11,7 @@ class TemplateException extends \Exception
 
     //模板中不允许直接使用PHP
     const PHP_DISABLED=2;
+
+    //缺少SEO相关配置(application|seo)
+    const SEO_CONFIG_UNEXISTS=3;
 }

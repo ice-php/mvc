@@ -466,7 +466,10 @@ final class Request extends ArrayObject
     private function antiHtml(): void
     {
         // 取防入侵配置
-        $config = config('anti');
+        $config = configDefault(null, 'anti');
+        if (!$config) {
+            return;
+        }
 
         // 如果来访IP在黑名单 中
         if (in_array($this->rawIp(), $config['blackip']) or $this->rawIp() == '-' and in_array($this->ip(), $config['blackip'])) {
