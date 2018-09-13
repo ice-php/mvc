@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace icePHP;
 
 /**
@@ -57,7 +58,7 @@ final class Request extends ArrayObject
      */
     public function agent(): string
     {
-        return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] ?: '' : '';
+        return $_SERVER['HTTP_USER_AGENT'] ?? '';
     }
 
     /**

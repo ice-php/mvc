@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace icePHP;
 /**
  * 跨页显示消息,通过Session保存

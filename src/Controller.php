@@ -1000,7 +1000,6 @@ abstract class Controller
      * 主要 是去除 null,bool,数值 , 都以字符串方式表现
      *
      * @param mixed $data 任意数据
-     * @throws \Exception 出现不认识的数据类型
      * @return string|array
      */
     private function encode($data)

@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace icePHP;
 /**
  * 全部页面控件,调用方法:在模板中 {:静态方法名(参数表)}
@@ -105,7 +106,7 @@ class ViewUnit
      * @param float $money
      * @return  float
      */
-    static public function money(float $money):float
+    static public function money(float $money): float
     {
         // 参数安全处理
         $money = floatval($money);
@@ -122,7 +123,7 @@ class ViewUnit
     /**
      * 取样式表文件路径
      */
-    static public function pathCss():string
+    static public function pathCss(): string
     {
         return Template::pathCss();
     }
@@ -130,7 +131,7 @@ class ViewUnit
     /**
      * 取脚本文件路径
      */
-    static public function pathJs():string
+    static public function pathJs(): string
     {
         return Template::pathJs();
     }
@@ -139,7 +140,7 @@ class ViewUnit
     /**
      * 取所有静态资源所在路径
      */
-    static public function pathStatic():string
+    static public function pathStatic(): string
     {
         return Template::pathStatic();
     }
@@ -147,7 +148,7 @@ class ViewUnit
     /**
      * 获取图片文件根路径
      */
-    static public function pathImg():string
+    static public function pathImg(): string
     {
         return Template::pathImg();
     }
@@ -156,7 +157,7 @@ class ViewUnit
     /**
      * 返回根路径,去除最后的斜线
      */
-    static public function pathRoot():string
+    static public function pathRoot(): string
     {
         return Template::pathRoot();
     }
@@ -167,7 +168,7 @@ class ViewUnit
      * @param string $phone
      * @return string
      */
-    static public function phone(string $phone):string
+    static public function phone(string $phone): string
     {
         return substr($phone, 0, 4) . '***' . substr($phone, -4);
     }
@@ -179,7 +180,7 @@ class ViewUnit
      * @param array $params
      * @return string
      */
-    static public function seo(string $page, array $params = []):string
+    static public function seo(string $page, array $params = []): string
     {
         // 取全部SEO配置信息
         $rules = config('application', 'seo');
@@ -217,9 +218,9 @@ class ViewUnit
      * @param int $len 允许的最大长度
      * @return string 截断后的串
      */
-    static public function short(?string $v,int $len = 20):string
+    static public function short(?string $v, int $len = 20): string
     {
-        if(!$v){
+        if (!$v) {
             return '';
         }
         if (mb_strlen($v, 'utf-8') <= $len) {
@@ -240,7 +241,7 @@ class ViewUnit
      *            prompt 提示信息
      * @throws \Exception
      */
-    static public function string(array $config):void
+    static public function string(array $config): void
     {
         display('form/string', $config);
     }
@@ -250,7 +251,7 @@ class ViewUnit
      * @param string $title
      * @throws \Exception
      */
-    static public function submit(string $title = '提交'):void
+    static public function submit(string $title = '提交'): void
     {
         display('form/submit', ['title' => $title]);
     }
@@ -265,7 +266,7 @@ class ViewUnit
      *            prompt 提示信息
      * @throws \Exception
      */
-    static public function table(array $config):void
+    static public function table(array $config): void
     {
         display('form/table', $config);
     }
@@ -274,7 +275,7 @@ class ViewUnit
      * 获取当前版本号
      * @return string
      */
-    static public function ver():string
+    static public function ver(): string
     {
         return config('system', 'version');
     }

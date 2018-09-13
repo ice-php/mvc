@@ -166,7 +166,7 @@ final class Template
      *            格式三: null 使用当前动作名称,并按格式二处理
      * @param array $params 参数数组,数组中的键值对将被释放为变量
      * @return string
-     * @throws \Exception
+     * @throws TemplateException
      */
     static public function display(string $view = null, array $params = []): string
     {
@@ -198,7 +198,7 @@ final class Template
 
     /**
      * 检查所有模板文件,如需要,则编译
-     * @throws \Exception
+     * @throws TemplateException
      */
     static public function recompile(): void
     {
@@ -223,7 +223,7 @@ final class Template
      * @param string $module 模块名
      * @param string $folder 目录名,相对于模板根路径 ,初始为'',之后 为'admin/',之类
      * @return int 调用层数
-     * @throws \Exception
+     * @throws TemplateException
      */
     static private function recompileFolder(string $module, string $folder): int
     {
@@ -284,7 +284,7 @@ final class Template
      *            格式三: null 使用当前动作名称,并按格式二处理
      *
      * @return string 编译后的模板文件(带路径)
-     * @throws \Exception
+     * @throws TemplateException
      */
     static private function getTpl(?string $view = null): string
     {
@@ -318,7 +318,7 @@ final class Template
             $compiled = self::$root . 'run/view_c/' . $view . '.php';
         } else {
             // 实在没找到
-            throw new \Exception('Template file not exist:' . $view);
+            throw new TemplateException('模板文件不存在:'.$view,TemplateException::TEMPLATE_NOT_FOUND);
         }
 
         // 如果关闭了模板自动编译的开关,则不自动编译,这个太不常用了.
@@ -336,7 +336,7 @@ final class Template
      * @param $source string 模板源文件名
      * @param $target string         编译后的文件名
      * @return int 是否确实重新编译了模板文件 1/0
-     * @throws \Exception
+     * @throws TemplateException
      */
     static private function compile(string $source, string $target): int
     {
@@ -362,7 +362,7 @@ final class Template
      *
      * @param string $view
      * @return string todo (.*?) /U非贪婪模式
-     * @throws \Exception
+     * @throws TemplateException
      */
     static private function compile2(string $view): string
     {
@@ -380,7 +380,7 @@ final class Template
 
         // 不允许出现PHP代码
         if (strpos($source, $s) !== false) {
-            throw new \Exception('Cant\'t use php code in template: ' . $view);
+            throw new TemplateException('模板中不允许直接使用PHP:'.$view,TemplateException::PHP_DISABLED);
         }
 
         // 要替换 的内容
