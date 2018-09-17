@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace icePHP;
 /**
  * 调用视图的方法
@@ -9,18 +10,25 @@ namespace icePHP;
  * @param array $params 模板参数数组
  * @param boolean $return 要求模板解析结果 返回而不是输出
  * @return string 模板解析结果或空
- * @throws TemplateException
  */
 function display(string $file = null, array $params = [], bool $return = false): string
 {
     // 如果不要求返回
     if (!$return) {
-        return Template::display($file, $params);
+        try {
+            return Template::display($file, $params);
+        } catch (TemplateException $e) {
+            trigger_error('无法读取模板文件:' . $file, E_USER_ERROR);
+        }
     }
 
     // 不输出,而是返回模板解析后的内容
     ob_start();
-    Template::display($file, $params);
+    try {
+        return Template::display($file, $params);
+    } catch (TemplateException $e) {
+        trigger_error('无法读取模板文件:' . $file, E_USER_ERROR);
+    }
     return ob_get_clean();
 }
 
@@ -38,7 +46,10 @@ function translation(string $name = '', array $params = []): string
 
     // 取整个配置文件
     if (!$config) {
-        $config = config('language');
+        $config = configDefault(null,'language');
+        if(!$config){
+            return $name;
+        }
     }
 
     // 请求参数中指定语言的参数名

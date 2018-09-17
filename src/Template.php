@@ -208,7 +208,6 @@ final class Template
 
     /**
      * 检查所有模板文件,如需要,则编译
-     * @throws TemplateException
      */
     static public function recompile(): void
     {
@@ -233,7 +232,6 @@ final class Template
      * @param string $module 模块名
      * @param string $folder 目录名,相对于模板根路径 ,初始为'',之后 为'admin/',之类
      * @return int 调用层数
-     * @throws TemplateException
      */
     static private function recompileFolder(string $module, string $folder): int
     {
@@ -346,7 +344,6 @@ final class Template
      * @param $source string 模板源文件名
      * @param $target string         编译后的文件名
      * @return int 是否确实重新编译了模板文件 1/0
-     * @throws TemplateException
      */
     static private function compile(string $source, string $target): int
     {
@@ -372,7 +369,6 @@ final class Template
      *
      * @param string $view
      * @return string todo (.*?) /U非贪婪模式
-     * @throws TemplateException
      */
     static private function compile2(string $view): string
     {
@@ -390,7 +386,7 @@ final class Template
 
         // 不允许出现PHP代码
         if (strpos($source, $s) !== false) {
-            throw new TemplateException('模板中不允许直接使用PHP:' . $view, TemplateException::PHP_DISABLED);
+            trigger_error('模板中不允许直接使用PHP:' . $view, E_USER_ERROR);
         }
 
         // 要替换 的内容

@@ -15,7 +15,6 @@ class ViewUnit
      *
      * @param string $url 返回的地址
      * @param string $title 可选,按钮标题
-     * @throws TemplateException
      */
     static public function back(string $url, string $title = ''): void
     {
@@ -30,7 +29,6 @@ class ViewUnit
      *
      * @param string $url 地址
      * @param string $title 按钮文字
-     * @throws TemplateException
      */
     static public function add(string $url, string $title = ''): void
     {
@@ -43,7 +41,6 @@ class ViewUnit
     /**
      * 显示面包屑,带任意多的参数,格式为名称=>地址 或 单独名称
      * @param $list array
-     * @throws TemplateException
      */
     static public function crumb(array $list): void
     {
@@ -60,7 +57,6 @@ class ViewUnit
      *            value 字段的值 ,本字段与info字段至少要提供一个,否则值为空
      *            prompt 提示信息,
      *            max 要求最大值为今天
-     * @throws TemplateException
      */
     static public function date(array $config): void
     {
@@ -179,7 +175,6 @@ class ViewUnit
      * @param string $page
      * @param array $params
      * @return string
-     * @throws TemplateException
      */
     static public function seo(string $page, array $params = []): string
     {
@@ -187,7 +182,8 @@ class ViewUnit
         try {
             $rules = config('application', 'seo');
         } catch (ConfigException $e) {
-            throw new TemplateException('缺少SEO相关配置(application|seo)', TemplateException::SEO_CONFIG_UNEXISTS);
+            trigger_error('缺少SEO相关配置(application|seo)', E_USER_ERROR);
+            exit;
         }
         if (!isset($rules[$page])) {
             $page = '_default';
@@ -244,7 +240,6 @@ class ViewUnit
      *            info 整个行对象
      *            value 字段的值 ,本字段与info字段至少要提供一个,否则值为空
      *            prompt 提示信息
-     * @throws TemplateException
      */
     static public function string(array $config): void
     {
@@ -254,7 +249,6 @@ class ViewUnit
     /**
      * 显示一个表单提交按钮
      * @param string $title
-     * @throws TemplateException
      */
     static public function submit(string $title = '提交'): void
     {
@@ -269,7 +263,6 @@ class ViewUnit
      *            info 整个行对象
      *            value 字段的值 ,本字段与info字段至少要提供一个,否则值为空
      *            prompt 提示信息
-     * @throws TemplateException
      */
     static public function table(array $config): void
     {
