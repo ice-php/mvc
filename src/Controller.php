@@ -33,6 +33,17 @@ abstract class Controller
     }
 
     /**
+     * 强制将当前请求转换为GET方式,以允许浏览器后退操作
+     */
+    protected function forceGet(): void
+    {
+        //如果当前是POST方式,则进行一次重定向
+        if ($_POST) {
+            $this->redirect($this->url(null, $this->action, $_REQUEST));
+        }
+    }
+
+    /**
      * 跳转,并返回继续工作
      * @param string $url 跳转地址
      */
