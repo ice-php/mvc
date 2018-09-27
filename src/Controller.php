@@ -32,6 +32,12 @@ abstract class Controller
         self::redirectTemporary($url);
     }
 
+    //首页,强制转换成GET请求
+    protected function index()
+    {
+        $this->forceGet();
+    }
+
     /**
      * 强制将当前请求转换为GET方式,以允许浏览器后退操作
      */
