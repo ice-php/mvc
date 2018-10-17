@@ -541,7 +541,7 @@ final class Template
         if (!isset($_SERVER['HTTP_USER_AGENT'])) {
             return false;
         }
-        return strpos($_SERVER["HTTP_USER_AGENT"], "MSIE");
+        return strpos($_SERVER["HTTP_USER_AGENT"], "MSIE") > 0;
     }
 
     /**
