@@ -752,6 +752,143 @@ abstract class Controller
     }
 
     /**
+     * 从请求参数中获取一个单值,可以指定 或不指定
+     * @param string $name 参数名称
+     * @return string|null 未指定时返回null
+     */
+    private function getOneBase(string $name): ?string
+    {
+        //取值
+        $v = $this->request->$name;
+
+        // 不存在则返回 null
+        if (!isset($this->request[$name]) or $v === '' or is_null($v)) {
+            return null;
+        }
+
+        //不能是数组
+        if (is_array($v)) {
+            static::error('参数格式错误:' . $name);
+        }
+
+        //不可能
+        if (!is_string($v)) {
+            static::error($name . '参数类型即不是数组也不是字符串:' . gettype($v));
+        }
+
+        //不能有编码问题
+        if ($this->codeError($v)) {
+            static::error('参数编码错误:' . $name);
+        }
+        return $v;
+    }
+
+    /**
+     * 从请求参数中获取一个单值,必须指定
+     * @param string $name 参数名称
+     * @return string
+     */
+    protected function getOneMust(string $name): string
+    {
+        //取值
+        $v = $this->getOneBase($name);
+
+        // 必须存在
+        if (is_null($v)) {
+            static::error('请求缺少必须的参数(' . $name . ')');
+        }
+        return $v;
+    }
+
+    /**
+     * 从请求参数中获取一个单值,可以不指定,有默认值
+     * @param string $name 参数名称
+     * @param string $default 默认值
+     * @return string
+     */
+    protected function getOne(string $name, string $default = null): string
+    {
+        //取值
+        $v = $this->getOneBase($name);
+
+        // 不存在时,返回默认值
+        if (is_null($v)) {
+            return $default;
+        }
+        return $v;
+    }
+
+    /**
+     * 从请求参数中获取一个数组,可以指定或不指定
+     * @param string $name 参数名称
+     * @return array|null 不指定时返回null
+     */
+    private function getArrBase(string $name): ?array
+    {
+        //取值
+        $v = $this->request->$name;
+
+        // 不存在时返回Null
+        if (!isset($this->request[$name]) or $v === '' or is_null($v)) {
+            return null;
+        }
+
+        //必须是数组
+        if (!is_array($v)) {
+            static::error('参数必须是数组:' . $name);
+        }
+
+        //逐个元素检查编码问题
+        foreach ($v as $value) {
+            if ($this->codeError($value)) {
+                static::error('参数编码错误:' . $name);
+            }
+        }
+
+        //返回数组
+        return $v;
+    }
+
+    /**
+     * 从请求参数中获取一个数组,必须指定
+     * @param string $name 参数名称
+     * @return array
+     */
+    protected function getArrMust(string $name): array
+    {
+        //取值
+        $v=$this->getArrBase($name);
+
+        // 必须存在
+        if (is_null($v)) {
+            static::error('请求缺少必须的参数(' . $name . ')');
+        }
+
+        //返回数组
+        return $v;
+    }
+
+    /**
+     * 从请求参数中获取一个数组,可以不指定,有默认值
+     * @param string $name 参数名称
+     * @param array $default 默认值
+     * @return array
+     */
+    protected function getArr(string $name, array $default = []): array
+    {
+        //取值
+        $v=$this->getArrBase($name);
+
+        // 如果未指定,返回默认值
+        if (is_null($v)) {
+            return $default;
+        }
+
+        //返回数组
+        return $v;
+    }
+
+    /**
      * 从请求参数中获取一个字符串参数,不过滤HTML
      * @param string $name 参数名
      * @param bool $must 是否是必须的
