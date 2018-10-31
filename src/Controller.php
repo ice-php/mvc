@@ -374,40 +374,50 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取一个整数参数
-     * @param string $name 参数名
-     * @param boolean $must 是否必须 存在
+     * 从参数中获取一个必须的整数
+     * @param string $name 参数名称
      * @return int
      */
-    protected function getInt(string $name, bool $must = true): int
+    protected function getIntMust(string $name): int
     {
-        //取值
-        $v = self::get($name, $must);
+        //取必须参数
+        $v = $this->getMust($name);
 
-        //检查必须性
-        $v = self::checkMust($v, $must, '参数:' . $name . ' 必须输入');
-        if (is_null($v)) return 0;
+        //去除前后空格
+        $v = trim($v);
 
-        $msg = '参数需要是整数(' . $name . ')';
-
-        //去除首尾空格
-        $v = trim($v, ' ');
-        if ($v === '') {
-            static::error($msg);
-        }
-
-        //去除前导0
-        $v = ltrim($v, '0');
-        if ($v === '') {
-            return 0;
-        }
-
-        //检查参数格式
+        //检查格式
         if (false === filter_var($v, FILTER_VALIDATE_INT)) {
-            static::error($msg);
+            static::error('参数必须是整数(' . $name . ')');
         }
 
-        // 取整返回
+        //转化成整型返回
+        return intval($v);
+    }
+
+    /**
+     * 从请求参数中获取一个不是必须的整数
+     * @param string $name 参数名称
+     * @param int $default 默认值
+     * @return int
+     */
+    protected function getInt(string $name, int $default = 0): int
+    {
+        //取参数
+        $v = $this->get($name);
+
+        //如果未指定
+        if (!$v) {
+            return $default;
+        }
+
+        //检查格式
+        $v = trim($v);
+        if (false === filter_var($v, FILTER_VALIDATE_INT)) {
+            static::error('参数必须是整数(' . $name . ')');
+        }
+
+        //转化整型
         return intval($v);
     }
 
@@ -417,14 +427,7 @@ abstract class Controller
     protected function getPage(): int
     {
         //取值
-        $page = self::getInt('page', false);
-
-        //允许默认值 为0
-        if (!$page) {
-            return 0;
-        }
-
-        return $page;
+        return self::getInt('page', 0);
     }
 
     /**
@@ -547,7 +550,7 @@ abstract class Controller
      */
     private function getCommon(string $title, string $name, $default, callable $check)
     {
-        $v = self::get($name, false);
+        $v = self::get($name);
         if (is_null($v)) {
             if (!is_null($default)) {
                 return $default;
@@ -611,13 +614,24 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取ID(编号)
-     * @param string $name 参数名称
+     * 从请求参数中获取ID(编号),必须指定
+     * @param string $name 参数名称,默认为id(小写)
      * @return int
      */
-    protected function getId(string $name = 'id'): ?int
+    protected function getIdMust(string $name = 'id'): int
     {
-        return $this->getInt($name, true);
+        return $this->getIntMust($name);
+    }
+
+    /**
+     * 从请求中获取ID(编号),不是必须指定
+     * @param string $name 参数名称,默认为id(小写)
+     * @param int $default 默认值
+     * @return int
+     */
+    protected function getId(string $name = 'id', int $default = 0): int
+    {
+        return $this->getInt($name, $default);
     }
 
     /**
@@ -654,8 +668,8 @@ abstract class Controller
     protected function getLimit(): array
     {
         //取值
-        $offset = self::getInt('offset', false) ?: 0;
-        $length = self::getInt('length', false) ?: 10;
+        $offset = self::getInt('offset', 0);
+        $length = self::getInt('length', 10);
 
         // offset不能小于0
         if ($offset < 0) {
@@ -695,7 +709,7 @@ abstract class Controller
      */
     protected function getPassword(string $name = 'password'): string
     {
-        return self::get($name, true);
+        return self::getMust($name);
     }
 
     /**
@@ -715,36 +729,43 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取一个字符串参数,过滤掉HTML标签
-     * @param string $name 参数名
-     * @param bool $must 是否是必须的
-     * @return string|array
+     * 从请求中获取一个必须的字符串参数,过滤掉HTML标签
+     * @param string $name 参数名称
+     * @return string
      */
-    protected function getString(string $name, bool $must = true)
+    protected function getStringMust(string $name): string
     {
-        $v = self::getHtml($name, $must);
-        if (is_null($v)) {
-            return $v;
-        }
+        //获取一个必要参数
+        $v = $this->getHtmlMust($name);
 
-        if (!is_array($v)) {
-            //去除引号和反斜线
-            $v = str_replace(['\'', '"', '\\'], '', $v);
-            return strip_tags($v);
-        }
-        foreach ($v as $k => $val) {
-            $v[$k] = str_replace(['\'', '"', '\\'], '', strip_tags($val));
-        }
-
-        return $v;
+        //去除引号和反斜线
+        $v = str_replace(['\'', '"', '\\'], '', $v);
+        return strip_tags($v);
     }
+
+    /**
+     * 从请求中获取一个不是必须的字符串参数,过滤掉HTML标签
+     * @param string $name 参数名称
+     * @param string $default 默认值
+     * @return string
+     */
+    protected function getString(string $name, string $default = ''): string
+    {
+        //获取一个不必要参数
+        $v = $this->getHtml($name, $default);
+
+        //去除引号和反斜线
+        $v = str_replace(['\'', '"', '\\'], '', $v);
+        return strip_tags($v);
+    }
+
 
     /**
      * 检查字符串是否是非法编码 (无法转换成gb2312/gbk)
      * @param $v string 待检查的字符串
      * @return bool true:无法成功转换
      */
-    private function codeError(string $v): bool
+    static private function codeError(string $v): bool
     {
         $special = configDefault('', 'anti', 'utf-8');
         return iconv('utf-8', 'gb2312', str_replace($special, '', $v)) === false
@@ -777,7 +798,7 @@ abstract class Controller
         }
 
         //不能有编码问题
-        if ($this->codeError($v)) {
+        if (self::codeError($v)) {
             static::error('参数编码错误:' . $name);
         }
         return $v;
@@ -788,7 +809,7 @@ abstract class Controller
      * @param string $name 参数名称
      * @return string
      */
-    protected function getOneMust(string $name): string
+    protected function getHtmlMust(string $name): string
     {
         //取值
         $v = $this->getOneBase($name);
@@ -806,7 +827,7 @@ abstract class Controller
      * @param string $default 默认值
      * @return string
      */
-    protected function getOne(string $name, string $default = null): string
+    protected function getHtml(string $name, string $default = null): string
     {
         //取值
         $v = $this->getOneBase($name);
@@ -840,7 +861,7 @@ abstract class Controller
 
         //逐个元素检查编码问题
         foreach ($v as $value) {
-            if ($this->codeError($value)) {
+            if (self::codeError($value)) {
                 static::error('参数编码错误:' . $name);
             }
         }
@@ -857,7 +878,7 @@ abstract class Controller
     protected function getArrMust(string $name): array
     {
         //取值
-        $v=$this->getArrBase($name);
+        $v = $this->getArrBase($name);
 
         // 必须存在
         if (is_null($v)) {
@@ -877,7 +898,7 @@ abstract class Controller
     protected function getArr(string $name, array $default = []): array
     {
         //取值
-        $v=$this->getArrBase($name);
+        $v = $this->getArrBase($name);
 
         // 如果未指定,返回默认值
         if (is_null($v)) {
@@ -888,68 +909,26 @@ abstract class Controller
         return $v;
     }
 
+
     /**
-     * 从请求参数中获取一个字符串参数,不过滤HTML
-     * @param string $name 参数名
-     * @param bool $must 是否是必须的
-     * @return null|string|array
+     * 从请求中获取一个必须的字符串参数,getStringMust的简略写法
+     * @param string $name 参数名称
+     * @return string
      */
-    protected function getHtml(string $name, bool $must = true)
+    protected function getMust(string $name): string
     {
-        //取值
-        $v = $this->request->$name;
-
-        // 检查存在性
-        if (!isset($this->request[$name]) or $v === '' or is_null($v)) {
-            if ($must) {
-                static::error('操作缺少必须的内容(' . $name . ')');
-            }
-            return null;
-        }
-
-        if (is_array($v)) {
-            foreach ($v as $value) {
-                if ($this->codeError($value)) {
-                    static::error('参数编码错误:' . $name);
-                }
-            }
-        } elseif ($this->codeError($v)) {
-            static::error('参数编码错误:' . $name);
-        }
-        return $v;
+        return $this->getStringMust($name);
     }
 
     /**
-     * 从请求参数中获取一个字符串,getString的简略写法
-     * @param string $name 参数名
-     * @param bool $must 是否必须提供
-     * @return string|array
+     * 从请求中获取三个不必须的字符串参数,getString的简略写法
+     * @param string $name 参数名称
+     * @param string $default 默认值
+     * @return string
      */
-    protected function get(string $name, bool $must = true)
+    protected function get(string $name, string $default = ''): string
     {
-        return self::getString($name, $must);
-    }
-
-    /**
-     * 检查并处理请求参数的必须提供情况
-     * @param $v mixed 参数值
-     * @param $must boolean 是否必须
-     * @param $msg string 提示信息
-     * @return mixed
-     */
-    private function checkMust($v, bool $must, string $msg)
-    {
-        //如果为空
-        if (is_null($v)) {
-            //如果要求必须输入
-            if ($must) {
-                static::error($msg);
-            }
-
-            //如果未必须输入
-            return null;
-        }
-        return $v;
+        return $this->getString($name, $default);
     }
 
     /**
@@ -1045,9 +1024,12 @@ abstract class Controller
      * @param bool $must 是否必须提供
      * @return string
      */
-    protected function getName(bool $must = true): ?string
+    protected function getName(bool $must = true): string
     {
-        return self::get('name', $must);
+        if ($must) {
+            return self::getMust('name');
+        }
+        return self::get('name');
     }
 
     /**
@@ -1207,7 +1189,7 @@ abstract class Controller
     protected function getKVList(string $name = 'list'): array
     {
         // 取字符串参数
-        $list = $this->get($name, false);
+        $list = $this->get($name);
         if (!$list) {
             return [];
         }
@@ -1272,10 +1254,15 @@ abstract class Controller
      */
     protected function error(string $msg, string $url = '', int $code = 1): void
     {
+        //如果当前是Ajax请求,以Ajax方式返回错误
         if (isAjax()) {
             $this->ajaxError($msg, $code);
-        } else {
+        } elseif ($this->request->referrer()) {
+            //如果有上一页,将错误返回给上一页
             self::errorBack($msg, $url);
+        } else {
+            //直接显示到错误页面
+            trigger_error($msg, E_USER_ERROR);
         }
     }
 
@@ -1314,10 +1301,10 @@ abstract class Controller
     protected function getAddress(): array
     {
         return [
-            'provinceId' => $this->getId('provinceId'), //省份编号
-            'cityId' => $this->getId('cityId'), //城市编号
-            'areaId' => $this->getId('areaId'), //区县编号
-            'address' => $this->get('address') //详细地址
+            'provinceId' => $this->getIdMust('provinceId'), //省份编号
+            'cityId' => $this->getIdMust('cityId'), //城市编号
+            'areaId' => $this->getIdMust('areaId'), //区县编号
+            'address' => $this->getMust('address') //详细地址
         ];
     }
 
