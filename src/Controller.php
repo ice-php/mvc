@@ -376,19 +376,20 @@ abstract class Controller
     /**
      * 从参数中获取一个必须的整数
      * @param string $name 参数名称
+     * @param string $msg 错误提示信息
      * @return int
      */
-    protected function getIntMust(string $name): int
+    protected function getIntMust(string $name, string $msg = ''): int
     {
         //取必须参数
-        $v = $this->getMust($name);
+        $v = $this->getMust($name, $msg);
 
         //去除前后空格
         $v = trim($v);
 
         //检查格式
         if (false === filter_var($v, FILTER_VALIDATE_INT)) {
-            static::error('参数必须是整数(' . $name . ')');
+            static::error($msg ?: '参数必须是整数(' . $name . ')');
         }
 
         //转化成整型返回
@@ -731,12 +732,13 @@ abstract class Controller
     /**
      * 从请求中获取一个必须的字符串参数,过滤掉HTML标签
      * @param string $name 参数名称
+     * @param string $msg 错误提示
      * @return string
      */
-    protected function getStringMust(string $name): string
+    protected function getStringMust(string $name, string $msg = ''): string
     {
         //获取一个必要参数
-        $v = $this->getHtmlMust($name);
+        $v = $this->getHtmlMust($name, $msg);
 
         //去除引号和反斜线
         $v = str_replace(['\'', '"', '\\'], '', $v);
@@ -807,16 +809,17 @@ abstract class Controller
     /**
      * 从请求参数中获取一个单值,必须指定
      * @param string $name 参数名称
+     * @param string $msg 错误提示
      * @return string
      */
-    protected function getHtmlMust(string $name): string
+    protected function getHtmlMust(string $name, string $msg = ''): string
     {
         //取值
         $v = $this->getOneBase($name);
 
         // 必须存在
         if (is_null($v)) {
-            static::error('请求缺少必须的参数(' . $name . ')');
+            static::error($msg ?: '请求缺少必须的参数(' . $name . ')');
         }
         return $v;
     }
@@ -913,11 +916,12 @@ abstract class Controller
     /**
      * 从请求中获取一个必须的字符串参数,getStringMust的简略写法
      * @param string $name 参数名称
+     * @param string $msg 错误信息
      * @return string
      */
-    protected function getMust(string $name): string
+    protected function getMust(string $name, string $msg = ''): string
     {
-        return $this->getStringMust($name);
+        return $this->getStringMust($name, $msg);
     }
 
     /**
