@@ -428,7 +428,7 @@ abstract class Controller
     protected function getPage(): int
     {
         //取值
-        return self::getInt('page', 0);
+        return self::getInt('page');
     }
 
     /**
