@@ -374,42 +374,20 @@ abstract class Controller
     }
 
     /**
-     * 从参数中获取一个必须的整数
-     * @param string $name 参数名称
-     * @param string $msg 错误提示信息
-     * @return int
-     */
-    protected function getIntMust(string $name, string $msg = ''): int
-    {
-        //取必须参数
-        $v = $this->getMust($name, $msg);
-
-        //去除前后空格
-        $v = trim($v);
-
-        //检查格式
-        if (false === filter_var($v, FILTER_VALIDATE_INT)) {
-            static::error($msg ?: '参数必须是整数(' . $name . ')');
-        }
-
-        //转化成整型返回
-        return intval($v);
-    }
-
-    /**
      * 从请求参数中获取一个不是必须的整数
      * @param string $name 参数名称
-     * @param int $default 默认值
+     * @param int|string $defaultOrMessage 默认值
      * @return int
      */
-    protected function getInt(string $name, int $default = 0): int
+    protected function getInt(string $name, $defaultOrMessage = 0): int
     {
         //取参数
-        $v = $this->get($name);
-
-        //如果未指定
-        if (!$v) {
-            return $default;
+        if (is_int($defaultOrMessage)) {
+            $v = $this->get($name, $defaultOrMessage . '');
+        } elseif (is_string($defaultOrMessage)) {
+            $v = $this->getMust($name, $defaultOrMessage);
+        } else {
+            trigger_error('getInt的第二个参数必须是整数或字符串', E_USER_ERROR);
         }
 
         //检查格式
@@ -1047,22 +1025,22 @@ abstract class Controller
     /**
      * 从请求参数中获取小时参数(0-24)
      * @param string $name 参数名称
-     * @param int $default 缺省值
+     * @param int|string $defaultOrMessage 缺省值|错误信息
      * @return null|int
      */
-    protected function getHour(string $name = 'hour', int $default = null): ?int
+    protected function getHour(string $name = 'hour', $defaultOrMessage = null): int
     {
-        return self::getCommon('小时', $name, $default, function ($v) {
-            if (!is_int($v)) {
-                return ['格式错误', ''];
-            }
-            $v = intval($v);
-            if ($v < 0 or $v > 24) {
-                return ['超出范围', ''];
-            }
+        if (is_int($defaultOrMessage)) {
+            $v = $this->getInt($name, $defaultOrMessage);
+        } else {
+            $v = $this->getIntMust($name, $defaultOrMessage);
+        }
 
-            return ['', $v];
-        });
+        if ($v < 0 or $v > 24) {
+            trigger_error('小时超出范围', E_USER_ERROR);
+        }
+
+        return $v;
     }
 
     /**
