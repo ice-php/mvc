@@ -1005,7 +1005,7 @@ abstract class Controller
      * @param string $msg 错误提示
      * @return string
      */
-    protected function getDateMust(string $name = 'date', string $msg): string
+    protected function getDateMust(string $name = 'date', string $msg = ''): string
     {
         $v = $this->getStringMust($name, $msg);
 
