@@ -374,6 +374,17 @@ abstract class Controller
     }
 
     /**
+     * 从请求参数中获取一个必须的整数
+     * @param string $name
+     * @param string $msg
+     * @return int
+     */
+    protected function getIntMust(string $name, string $msg = ''): int
+    {
+        return $this->getInt($name, $msg);
+    }
+
+    /**
      * 从请求参数中获取一个不是必须的整数
      * @param string $name 参数名称
      * @param int|string $defaultOrMessage 默认值
