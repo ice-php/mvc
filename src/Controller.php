@@ -603,27 +603,32 @@ abstract class Controller
     /**
      * 获取一个大于0的金额
      * @param string $name 参数名称
+     * @param string $msg 错误信息
+     * @return float
+     */
+    protected function getPositiveMoneyMust(string $name = 'money', string $msg = ''): float
+    {
+        $v = $this->getMoneyMust($name, $msg);
+        if ($v <= 0) {
+            trigger_error('金额必须大于零', E_USER_ERROR);
+        }
+        return $v;
+    }
+
+
+    /**
+     * 获取一个大于0的金额
+     * @param string $name 参数名称
      * @param float $default 缺省值
      * @return float
      */
-    protected function getPositiveMoney(string $name = 'money', float $default = null): ?float
+    protected function getPositiveMoney(string $name = 'money', float $default = 0): float
     {
-        return self::getCommon('金额', $name, $default, function ($v) {
-            if (!is_numeric($v)) {
-                return ['必须是数值', null];
-            }
-
-            if (!preg_match('/^\d+(\.\d{1,2})?$/', $v)) {
-                return ['格式错误', null];
-            }
-
-            $v = floatval($v);
-            if ($v <= 0) {
-                return ['必须大于0', null];
-            }
-
-            return ['', $v];
-        });
+        $v = $this->getMoney($name, $default);
+        if ($v <= 0) {
+            trigger_error('金额必须大于零', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
@@ -679,30 +684,43 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取 整数 列表(逗号分隔),也可以是真正的数组
+     * 从请求参数中获取 整数 列表(逗号分隔),也可以是真正的数组, 必须提供
      * @param string $name 参数名
-     * @param bool $must 是否是必须的
+     * @param string $msg 错误提示
      * @return array
      */
-    protected function getIds(string $name = 'ids', bool $must = true): array
+    protected function getIdsMust(string $name = 'ids', string $msg = ''): array
     {
-        return self::getCommon('编号列表', $name, $must ? null : [], function ($v) {
-            if (is_array($v)) {
-                foreach ($v as $item) {
-                    if (!preg_match('/^\d+(,\d+)*$/', $item)) {
-                        return ['格式错误', ''];
-                    }
-                }
-                return ['', $v];
-            }
-            // 檢查有效性
-            if (!preg_match('/^\d+(,\d+)*$/', $v)) {
-                return ['格式错误', ''];
-            }
+        $v = $this->getArrayMust($name, $msg);
 
-            // 分解成数组返回
-            return ['', explode(',', $v)];
-        });
+        foreach ($v as $k => $item) {
+            if (!preg_match('/^\d+(,\d+)*$/', $item)) {
+                trigger_error('编号列表格式错误', E_USER_ERROR);
+            }
+            $v[$k] = intval($item);
+        }
+
+        return $v;
+    }
+
+    /**
+     * 从请求参数中获取 整数 列表(逗号分隔),也可以是真正的数组, 可以有缺省值
+     * @param string $name 参数名
+     * @param array $default 缺省值
+     * @return array
+     */
+    protected function getIds(string $name = 'ids', array $default = []): array
+    {
+        $v = $this->getArray($name, $default);
+
+        foreach ($v as $k => $item) {
+            if (!preg_match('/^\d+(,\d+)*$/', $item)) {
+                trigger_error('编号列表格式错误', E_USER_ERROR);
+            }
+            $v[$k] = intval($item);
+        }
+
+        return $v;
     }
 
     /**
@@ -919,16 +937,17 @@ abstract class Controller
     /**
      * 从请求参数中获取一个数组,必须指定
      * @param string $name 参数名称
+     * @param string $msg 错误提示
      * @return array
      */
-    protected function getArrayMust(string $name): array
+    protected function getArrayMust(string $name, string $msg = ''): array
     {
         //取值
         $v = $this->getArrBase($name);
 
         // 必须存在
         if (is_null($v)) {
-            static::error('请求缺少必须的参数(' . $name . ')');
+            static::error($msg ?: '请求缺少必须的参数(' . $name . ')');
         }
 
         //返回数组
