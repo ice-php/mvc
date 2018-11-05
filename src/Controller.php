@@ -1088,22 +1088,38 @@ abstract class Controller
         return $v;
     }
 
+    /**
+     * 从请求参数中获取一个时间参数,Y-m-d H:i:s, 必须提供
+     * @param string $name 参数名称,默认为datetime
+     * @param string $msg 错误消息
+     * @return string
+     */
+    protected function getDateTimeMust(string $name = 'datetime', string $msg = ''): string
+    {
+        $v = $this->getStringMust($name, $msg);
+
+        // 检查格式
+        if ($v and !preg_match('/^\d{4}\-\d{2}\-\d{2}\s*\d{2}\:\d{2}\:\d{2}$/', $v)) {
+            trigger_error('日期时间格式错误', E_USER_ERROR);
+        }
+        return $v;
+    }
 
     /**
      * 从请求参数中获取一个时间参数,Y-m-d H:i:s
-     * @param string $name 参数名称,默认为time
-     * @param bool $must 是否必须提供
+     * @param string $name 参数名称,默认为datetime
+     * @param string $default 默认值
      * @return string
      */
-    protected function getDateTime(string $name = 'datetime', bool $must = false): ?string
+    protected function getDateTime(string $name = 'datetime', string $default = ''): string
     {
-        return self::getCommon('时间', $name, $must ? null : '', function ($v) {
-            // 检查格式
-            if (!preg_match('/^\d{4}\-\d{2}\-\d{2}\s*\d{2}\:\d{2}\:\d{2}$/', $v)) {
-                return ['格式错误', ''];
-            }
-            return ['', $v];
-        });
+        $v = $this->getString($name, $default);
+
+        // 检查格式
+        if ($v and !preg_match('/^\d{4}\-\d{2}\-\d{2}\s*\d{2}\:\d{2}\:\d{2}$/', $v)) {
+            trigger_error('日期时间格式错误', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
