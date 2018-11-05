@@ -774,18 +774,18 @@ abstract class Controller
 
     /**
      * 从请求参数中获取邮箱地址(Email)
-     * @param bool $must 是否是必须的
+     * @param $name string 参数名称
+     * @param $msg string 错误提示
      * @return string
      */
-    protected function getEmail(bool $must = true): string
+    protected function getEmail($name = 'email', string $msg = ''): string
     {
+        $v = $this->getStringMust($name, $msg);
 
-        return self::getCommon('邮箱地址', 'email', $must ? null : '', function ($v) {
-            if (false === filter_var($v, FILTER_VALIDATE_EMAIL)) {
-                return ['格式错误', ''];
-            }
-            return ['', $v];
-        });
+        if (false === filter_var($v, FILTER_VALIDATE_EMAIL)) {
+            trigger_error('邮箱格式错误', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
