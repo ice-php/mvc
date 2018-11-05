@@ -1492,18 +1492,20 @@ abstract class Controller
      * @param $nameField string 字典表名字字段名称
      * @param $valueField string 字典表值字段名称
      * @param $separator string 分隔符
-     * @param bool $must
-     * @return null|string
+     * @return string
      */
-    protected function getDict(string $name, string $table, string $nameField, string $valueField, string $separator, bool $must = true): ?string
+    protected function getDict(string $name, string $table, string $nameField, string $valueField, string $separator=','): string
     {
-        return self::getCommon('', $name, $must ? null : '', function ($v) use ($table, $name, $nameField, $valueField, $separator) {
-            //检查合法性
-            if (!in_array($v, explode($separator, table($table)->get($valueField, [$nameField => $name])))) {
-                return ['取值不在允许范围内', ''];
-            }
-            return ['', $v];
-        });
+        $v = $this->getString($name);
+        if (!$v) {
+            return $v;
+        }
+
+        //检查合法性
+        if (!in_array($v, explode($separator, table($table)->get($valueField, [$nameField => $name])))) {
+            trigger_error('取值超出范围', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
