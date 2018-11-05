@@ -465,27 +465,32 @@ abstract class Controller
      * 从请求参数中获取一个正整数
      * @param $name string
      * @param int $default
-     * @return int|null
+     * @return int
      */
-    protected function getPositive(string $name, int $default = null): ?int
+    protected function getPositive(string $name, int $default = null): int
     {
-        return self::getCommon('', $name, $default, function ($v) {
-            if (!is_numeric($v)) {
-                return ['必须是数值', null];
-            }
-
-            if (!is_int($v)) {
-                return ['必须是整数', null];
-            }
-
-            $v = intval($v);
-            if ($v <= 0) {
-                return ['必须大于0', null];
-            }
-
-            return ['', $v];
-        });
+        $v = $this->getInt($name, $default);
+        if ($v <= 0) {
+            trigger_error("参数:$name 取值错误", E_USER_ERROR);
+        }
+        return $v;
     }
+
+    /**
+     * 从参数中获取一个正整数,必须提供
+     * @param string $name 参数名称
+     * @param string $msg 错误信息
+     * @return int
+     */
+    protected function getPositiveMust(string $name, string $msg = ''): int
+    {
+        $v = $this->getIntMust($name, $msg);
+        if ($v <= 0) {
+            trigger_error("参数:$name 取值错误", E_USER_ERROR);
+        }
+        return $v;
+    }
+
 
     /**
      * 从请求参数中获取一个字母数字串
