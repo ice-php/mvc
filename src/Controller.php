@@ -615,24 +615,21 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取ID(编号),必须指定
-     * @param string $name 参数名称,默认为id(小写)
-     * @return int
-     */
-    protected function getIdMust(string $name = 'id'): int
-    {
-        return $this->getIntMust($name);
-    }
-
-    /**
      * 从请求中获取ID(编号),不是必须指定
      * @param string $name 参数名称,默认为id(小写)
-     * @param int $default 默认值
+     * @param int|string $defaultOrMessage 默认值或者是错误提示
      * @return int
      */
-    protected function getId(string $name = 'id', int $default = 0): int
+    protected function getId(string $name = 'id', $defaultOrMessage = 0): int
     {
-        return $this->getInt($name, $default);
+        if (is_int($defaultOrMessage)) {
+            return $this->getInt($name, $defaultOrMessage);
+        }
+        if (is_string($defaultOrMessage)) {
+            return $this->getIntMust($name, $defaultOrMessage);
+        }
+
+        trigger_error('getId方法的第二个参数,必须是整型或字符串', E_USER_ERROR);
     }
 
     /**
