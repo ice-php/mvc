@@ -1412,24 +1412,33 @@ abstract class Controller
     }
 
     /**
-     * 获取指定范围值
-     * @param $name string 参数名
-     * @param $enum array 允许的取值范围
-     * @param $mustOrMessage bool|string  是否必须,或者提示信息
+     * 获取指定范围枚举值,必须提供
+     * @param string $name 参数名称
+     * @param array $enum 允许的取值范围
+     * @param string $msg 错误提示
      * @return string
      */
-    protected function getEnum(string $name, array $enum, $mustOrMessage = false): string
+    protected function getEnumMust(string $name, array $enum, string $msg = ''): string
     {
-        //必须提供
-        if ($mustOrMessage === true) {
-            $v = $this->getStringMust($name);
-        } elseif (is_string($mustOrMessage)) {
-            //必须提供,如果未提供,提示指定信息
-            $v = $this->getStringMust($name, $mustOrMessage);
-        } else {
-            //可以不提供,默认为空
-            $v = $this->getString($name, '');
+        $v = $this->getStringMust($name, $msg);
+
+        if ($v and !in_array($v, $enum)) {
+            trigger_error('参数不在指定范围内', E_USER_ERROR);
         }
+        return $v;
+    }
+
+    /**
+     * 获取指定范围值枚举 值,可以默认
+     * @param $name string 参数名
+     * @param $enum array 允许的取值范围
+     * @param $default string 默认值
+     * @return string
+     */
+    protected function getEnum(string $name, array $enum, string $default = ''): string
+    {
+        //可以不提供,默认为空
+        $v = $this->getString($name, $default);
 
         if ($v and !in_array($v, $enum)) {
             trigger_error('参数不在指定范围内', E_USER_ERROR);
