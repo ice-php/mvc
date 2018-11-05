@@ -1022,7 +1022,7 @@ abstract class Controller
      * @param string $default 缺省值
      * @return string
      */
-    protected function getDate(string $name = 'date', string $default): string
+    protected function getDate(string $name = 'date', string $default = ''): string
     {
         $v = $this->getString($name, $default);
 
