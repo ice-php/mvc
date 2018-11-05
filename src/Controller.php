@@ -1226,12 +1226,11 @@ abstract class Controller
      */
     protected function getVCode(string $name = 'vCode'): string
     {
-        return self::getCommon('验证码', $name, null, function ($v) {
-            if (preg_match('/^[\d\w]{4}$/', $v)) {
-                return ['', $v];
-            }
-            return ['格式错误', ''];
-        });
+        $v = $this->getStringMust($name);
+        if (!preg_match('/^[\d\w]{4}$/', $v)) {
+            trigger_error('验证码格式错误', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
