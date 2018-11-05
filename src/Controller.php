@@ -1415,17 +1415,26 @@ abstract class Controller
      * 获取指定范围值
      * @param $name string 参数名
      * @param $enum array 允许的取值范围
-     * @param bool $must
-     * @return mixed|string
+     * @param $mustOrMessage bool|string  是否必须,或者提示信息
+     * @return string
      */
-    protected function getEnum(string $name, array $enum, bool $must = true): ?string
+    protected function getEnum(string $name, array $enum, $mustOrMessage = false): string
     {
-        return self::getCommon('', $name, $must ? null : '', function ($v) use ($enum) {
-            if (in_array($v, $enum)) {
-                return ['', $v];
-            }
-            return ['取值不在允许的范围内', ''];
-        });
+        //必须提供
+        if ($mustOrMessage === true) {
+            $v = $this->getStringMust($name);
+        } elseif (is_string($mustOrMessage)) {
+            //必须提供,如果未提供,提示指定信息
+            $v = $this->getStringMust($name, $mustOrMessage);
+        } else {
+            //可以不提供,默认为空
+            $v = $this->getString($name, '');
+        }
+
+        if ($v and !in_array($v, $enum)) {
+            trigger_error('参数不在指定范围内', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
