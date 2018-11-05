@@ -889,7 +889,7 @@ abstract class Controller
      * @param string $name 参数名称
      * @return array
      */
-    protected function getArrMust(string $name): array
+    protected function getArrayMust(string $name): array
     {
         //取值
         $v = $this->getArrBase($name);
@@ -909,7 +909,7 @@ abstract class Controller
      * @param array $default 默认值
      * @return array
      */
-    protected function getArr(string $name, array $default = []): array
+    protected function getArray(string $name, array $default = []): array
     {
         //取值
         $v = $this->getArrBase($name);
@@ -1058,23 +1058,6 @@ abstract class Controller
         $v = json_decode(preg_replace('/(\\\u[d-f][0-9a-f]{3})/i', '', json_encode($v)));
 
         return $v;
-    }
-
-    /**
-     * 从请求参数中获取一个数组,可以是真正的数组,也可以是逗号分隔的
-     * @param string $name 参数名称
-     * @param bool $must 是否必须
-     * @return array
-     */
-    protected function getArray(string $name, bool $must = true): array
-    {
-        return self::getCommon('', $name, $must ? null : [], function ($v) {
-            if (is_array($v)) {
-                return ['', $v];
-            }
-            $v = explode(',', $v);
-            return ['', $v];
-        });
     }
 
     /**
