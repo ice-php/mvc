@@ -620,7 +620,7 @@ abstract class Controller
      * @param int|string $defaultOrMessage 默认值或者是错误提示
      * @return int
      */
-    protected function getId(string $name = 'id', $defaultOrMessage = 0): int
+    protected function getId(string $name = 'id', $defaultOrMessage = '缺少编号'): int
     {
         if (is_int($defaultOrMessage)) {
             return $this->getInt($name, $defaultOrMessage);
@@ -630,6 +630,7 @@ abstract class Controller
         }
 
         trigger_error('getId方法的第二个参数,必须是整型或字符串', E_USER_ERROR);
+        return 0;
     }
 
     /**
