@@ -1060,16 +1060,34 @@ abstract class Controller
      * @param string $default 缺省值
      * @return string
      */
-    protected function getTime(string $name = 'time', string $default = null): string
+    protected function getTime(string $name = 'time', string $default = ''): string
     {
-        return self::getCommon('时间', $name, $default, function ($v) {
-            // 检查格式
-            if (preg_match('/^\d{2}\:\d{2}\:\d{2}$/', $v)) {
-                return ['', $v];
-            }
-            return ['格式错误', ''];
-        });
+        $v = $this->getString($name, $default);
+
+        // 检查格式
+        if ($v and preg_match('/^\d{2}\:\d{2}\:\d{2}$/', $v)) {
+            trigger_error('时间格式错误', E_USER_ERROR);
+        }
+        return $v;
     }
+
+    /**
+     * 从请求参数中获取一个时间参数, H:i:s
+     * @param string $name 参数名称,默认为time
+     * @param string $msg 错误消息
+     * @return string
+     */
+    protected function getTimeMust(string $name = 'time', string $msg = ''): string
+    {
+        $v = $this->getStringMust($name, $msg);
+
+        // 检查格式
+        if ($v and preg_match('/^\d{2}\:\d{2}\:\d{2}$/', $v)) {
+            trigger_error('时间格式错误', E_USER_ERROR);
+        }
+        return $v;
+    }
+
 
     /**
      * 从请求参数中获取一个时间参数,Y-m-d H:i:s
