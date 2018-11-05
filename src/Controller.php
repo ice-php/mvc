@@ -399,6 +399,7 @@ abstract class Controller
             $v = $this->getMust($name, $defaultOrMessage);
         } else {
             trigger_error('getInt的第二个参数必须是整数或字符串', E_USER_ERROR);
+            exit;
         }
 
         //检查格式
@@ -1494,7 +1495,7 @@ abstract class Controller
      * @param $separator string 分隔符
      * @return string
      */
-    protected function getDict(string $name, string $table, string $nameField, string $valueField, string $separator=','): string
+    protected function getDict(string $name, string $table, string $nameField, string $valueField, string $separator = ','): string
     {
         $v = $this->getString($name);
         if (!$v) {
@@ -1514,19 +1515,14 @@ abstract class Controller
      * @param int $default 缺省值
      * @return null|int
      */
-    protected function getMinute(string $name = 'minute', int $default = null): ?int
+    protected function getMinute(string $name = 'minute', int $default = 0): int
     {
-        return self::getCommon('分钟', $name, $default, function ($v) {
-            if (!is_int($v)) {
-                return ['格式错误', ''];
-            }
-            $v = intval($v);
-            if ($v < 0 or $v > 59) {
-                return ['超出范围', ''];
-            }
+        $v = $this->getInt($name, $default);
+        if ($v < 0 or $v > 59) {
+            trigger_error('分钟超出范围', E_USER_ERROR);
+        }
 
-            return ['', $v];
-        });
+        return $v;
     }
 
     /**
@@ -1535,15 +1531,13 @@ abstract class Controller
      * @param int $default 缺省值
      * @return null|int
      */
-    protected function getYear(string $name = 'year', int $default = null): int
+    protected function getYear(string $name = 'year', int $default = 0): int
     {
-        return self::getCommon('年份', $name, $default, function ($v) {
-            if (is_int($v)) {
-                return ['', $v];
-            }
-
-            return '格式错误';
-        });
+        $v = $this->getPositive($name, $default ?: intval(date('Y')));
+        if ($v < 1900 or $v > 2900) {
+            trigger_error('年份超出范围', E_USER_ERROR);
+        }
+        return $v;
     }
 
     //强制本次请求为Ajax
