@@ -525,20 +525,33 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取一个浮点数
-     * @param string $name 参数名
-     * @param float $default 缺省值 如果不提供缺省值,那么 此参数就是必须输入的
+     * 从请求参数中获取一个必须的浮点参数
+     * @param string $name 参数名称
+     * @param string $msg 错误提示
      * @return float
      */
-    protected function getFloat(string $name, float $default = null): ?float
+    protected function getFloatMust(string $name, string $msg = ''): float
     {
-        return self::getCommon('', $name, $default, function ($v) {
-            // 检查有效性
-            if (false === filter_var($v, FILTER_VALIDATE_FLOAT)) {
-                return ['必须是浮点数', ''];
-            }
-            return ['', floatval($v)];
-        });
+        $v = $this->getStringMust($name, $msg);
+        if (false == filter_var($v, FILTER_VALIDATE_FLOAT)) {
+            trigger_error($msg ?: "参数:$name 必须是一个浮点数", E_USER_ERROR);
+        }
+        return floatval($v);
+    }
+
+    /**
+     * 从请求参数中获取一个不必须的浮点数
+     * @param string $name 参数名
+     * @param float $default 缺省值
+     * @return float
+     */
+    protected function getFloat(string $name, float $default = 0): float
+    {
+        $v = $this->getString($name, $default . '');
+        if (false == filter_var($v, FILTER_VALIDATE_FLOAT)) {
+            trigger_error("参数:$name 必须是一个浮点数", E_USER_ERROR);
+        }
+        return floatval($v);
     }
 
     /**
