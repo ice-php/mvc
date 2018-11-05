@@ -748,20 +748,18 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取性别:男/女/未知
+     * 从请求参数中获取性别:男/女/未知,必须提供
      * @param $name string 参数名称
-     * @param $default string 缺省值
+     * @param string $msg 错误信息
      * @return string 男/女/未知
      */
-    protected function getSex(string $name = 'sex', string $default = null): string
+    protected function getSex(string $name = 'sex', string $msg = ''): string
     {
-        return self::getCommon('性别', $name, $default, function ($v) {
-            // 判定取值是否允许
-            if (in_array($v, ['男', '女', '未知'])) {
-                return ['', $v];
-            }
-            return ['无法识别', ''];
-        });
+        $v = $this->getStringMust($name, $msg);
+        if (!in_array($v, ['男', '女', '未知'])) {
+            trigger_error('性别无法识别', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
