@@ -1123,19 +1123,20 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取一个时间参数,Y-m-d H:i
-     * @param string $name 参数名称,默认为time
+     * 从请求参数中获取一个时间参数(Y-m-d H:i),不是必须的
+     * @param string $name
+     * @param string $default
      * @return string
      */
-    protected function getNoMinuteTime(string $name = 'datetime'): ?string
+    protected function getMinuteTime(string $name = 'datetime', string $default = ''): string
     {
-        return self::getCommon('日期时间', $name, '', function ($v) {
-            // 检查格式
-            if (!preg_match('/^\d{4}\-\d{2}\-\d{2}\s*\d{2}\:\d{2}$/', $v)) {
-                return ['格式错误', ''];
-            }
-            return ['', $v];
-        });
+        $v = $this->getString($name, $default);
+
+        // 检查格式
+        if ($v and !preg_match('/^\d{4}\-\d{2}\-\d{2}\s*\d{2}\:\d{2}$/', $v)) {
+            trigger_error('日期时间格式错误', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
