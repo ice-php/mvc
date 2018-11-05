@@ -1469,18 +1469,20 @@ abstract class Controller
      * @param $table string 外键表名称
      * @param $key string 外键表值字段名称
      * @param $where string 外键表搜索条件
-     * @param bool $must 是否必须存在
      * @return null|string
      */
-    protected function getForeign(string $name, string $table, string $key, string $where, bool $must = true): ?string
+    protected function getForeign(string $name, string $table, string $key = 'id', string $where = ''): string
     {
-        return self::getCommon('', $name, $must ? null : '', function ($v) use ($table, $key, $where) {
-            //在外键表中检查存在性
-            if (!table($table)->exist(($where ? $where . ' AND ' : '') . ' `' . $key . '`=\'' . $v . '\'')) {
-                return ['参数值不在允许范围内', ''];
-            }
-            return $v;
-        });
+        $v = $this->getString($name);
+        if (!$v) {
+            return '';
+        }
+
+        //在外键表中检查存在性
+        if (!table($table)->exist(($where ? $where . ' AND ' : '') . ' `' . $key . '`=\'' . $v . '\'')) {
+            trigger_error('参数值不在允许范围内', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
