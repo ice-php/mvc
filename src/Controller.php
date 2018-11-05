@@ -1011,20 +1011,37 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取一个日期(yyyy-mm-dd)
+     * 从请求参数中获取一个日期(yyyy-mm-dd),必须提供
      * @param string $name 参数名
-     * @param bool $must 是否必须提供
+     * @param string $msg 错误提示
      * @return string
      */
-    protected function getDate(string $name = 'date', bool $must = true): ?string
+    protected function getDateMust(string $name = 'date', string $msg): string
     {
-        return self::getCommon('日期', $name, $must ? null : '', function ($v) {
-            // 检查格式
-            if (!preg_match('/^\d{4}\-\d{2}\-\d{2}$/', $v)) {
-                return ['格式错误', ''];
-            }
-            return ['', $v];
-        });
+        $v = $this->getStringMust($name, $msg);
+
+        // 检查格式
+        if (!preg_match('/^\d{4}\-\d{2}\-\d{2}$/', $v)) {
+            trigger_error('日期格式错误', E_USER_ERROR);
+        }
+        return $v;
+    }
+
+    /**
+     * 从请求参数中获取一个日期(yyyy-mm-dd)
+     * @param string $name 参数名
+     * @param string $default 缺省值
+     * @return string
+     */
+    protected function getDate(string $name = 'date', string $default): string
+    {
+        $v = $this->getString($name, $default);
+
+        // 检查格式
+        if ($v and !preg_match('/^\d{4}\-\d{2}\-\d{2}$/', $v)) {
+            trigger_error('日期格式错误', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
