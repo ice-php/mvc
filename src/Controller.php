@@ -1200,22 +1200,23 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取手机号码,
-     * @param string $name 参数名默认为phone
-     * @param bool $must 是否必须
-     * @return null|string
-     * @Author 阿顿
-     * @Version 1.1.1版
+     * 获取手机号码,可以缺省
+     * @param string $default
+     * @return string
      */
-    protected function getPhone(string $name = 'phone', bool $must = true): ?string
+    protected function getPhone(string $default = ''): string
     {
-        return self::getCommon('手机号码', $name, $must ? null : '', function ($v) {
-            // 正则,1开头,11位数字
-            if (preg_match('/^1[3|4|5|7|8|9]\d{9}$/', $v)) {
-                return ['', $v];
-            }
-            return ['格式错误', ''];
-        });
+        return $this->getMobile('phone', $default);
+    }
+
+    /**
+     * 获取手机号码,必须提供
+     * @param string $msg
+     * @return string
+     */
+    protected function getPhoneMust(string $msg = ''): string
+    {
+        return $this->getMobileMust('phone', $msg);
     }
 
     /**
