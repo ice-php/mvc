@@ -566,31 +566,6 @@ abstract class Controller
     }
 
     /**
-     * 通用获取参数值的方法
-     * @param string $title 参数的表意名称
-     * @param string $name 参数名称
-     * @param $default mixed 缺省值
-     * @param callable $check 验证方法,需要返回[$error,$val]
-     * @return mixed
-     */
-    private function getCommon(string $title, string $name, $default, callable $check)
-    {
-        $v = self::get($name);
-        if (is_null($v)) {
-            if (!is_null($default)) {
-                return $default;
-            }
-            static::error("{$title}参数[$name]必须输入");
-        }
-
-        [$error, $val] = $check($v);
-        if ($error) {
-            static::error("{$title}参数" . $error);
-        }
-        return $val;
-    }
-
-    /**
      * 获取一个大于0的金额
      * @param string $name 参数名称
      * @param string $msg 错误信息
