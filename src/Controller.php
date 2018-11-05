@@ -491,6 +491,20 @@ abstract class Controller
         return $v;
     }
 
+    /**
+     * 从请求参数中获取一个字母数字串,必须提供
+     * @param string $name 参数名称
+     * @param string $msg 错误信息
+     * @return string
+     */
+    protected function getWordMust(string $name, string $msg = ''): string
+    {
+        $v = $this->getStringMust($name, $msg);
+        if (!preg_match('/^\w+$/', $v)) {
+            trigger_error('参数:' . $name . ' 需要是字母数字', E_USER_ERROR);
+        }
+        return $v;
+    }
 
     /**
      * 从请求参数中获取一个字母数字串
@@ -500,13 +514,11 @@ abstract class Controller
      */
     protected function getWord(string $name, string $default = null): string
     {
-        return self::getCommon('', $name, $default, function ($v) {
-            // 检查有效性
-            if (preg_match('/^\w+$/', $v)) {
-                return ['', $v];
-            }
-            return ['需要是字母数字', ''];
-        });
+        $v = $this->getString($name, $default);
+        if (!preg_match('/^\w+$/', $v)) {
+            trigger_error('参数:' . $name . ' 需要是字母数字', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
