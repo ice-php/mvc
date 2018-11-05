@@ -432,29 +432,33 @@ abstract class Controller
     }
 
     /**
+     * 从请求参数中获取一个必须的自然数(0或正整数)
+     * @param string $name 参数名称
+     * @param string $msg 错误信息
+     * @return int
+     */
+    protected function getNatureMust(string $name, string $msg = ''): int
+    {
+        $v = $this->getIntMust($name, $msg);
+        if ($v < 0) {
+            trigger_error("参数:$name 取值错误", E_USER_ERROR);
+        }
+        return $v;
+    }
+
+    /**
      * 从请求参数中获取一个自然数(0,或正整数)
      * @param $name string 参数名称
      * @param $default int 缺省值
      * @return int
      */
-    protected function getNature(string $name, int $default = null): ?int
+    protected function getNature(string $name, int $default = 0): int
     {
-        return self::getCommon('', $name, $default, function ($v) {
-            if (!is_numeric($v)) {
-                return ['必须是数值', null];
-            }
-
-            if (!is_int($v)) {
-                return ['必须是整数', null];
-            }
-
-            $v = intval($v);
-            if ($v < 0) {
-                return ['必须大于等于0', null];
-            }
-
-            return ['', $v];
-        });
+        $v = $this->getInt($name, $default);
+        if ($v < 0) {
+            trigger_error("参数:$name 取值错误", E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
@@ -1299,9 +1303,9 @@ abstract class Controller
     protected function getAddress(): array
     {
         return [
-            'provinceId' => $this->getIdMust('provinceId'), //省份编号
-            'cityId' => $this->getIdMust('cityId'), //城市编号
-            'areaId' => $this->getIdMust('areaId'), //区县编号
+            'provinceId' => $this->getId('provinceId'), //省份编号
+            'cityId' => $this->getId('cityId'), //城市编号
+            'areaId' => $this->getId('areaId'), //区县编号
             'address' => $this->getMust('address') //详细地址
         ];
     }
