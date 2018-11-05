@@ -1166,21 +1166,38 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取手机号码(mobile)参数
-     * @param $must bool 是否必须输入
+     * 从请求参数中获取手机号码,必须提供
+     * @param string $name
+     * @param string $msg
      * @return string
      */
-    protected function getMobile(bool $must = true): ?string
+    protected function getMobileMust(string $name = 'mobile', string $msg = ''): string
     {
-        return self::getCommon('手机号码', 'mobile', $must ? null : '', function ($v) {
-            // 正则,1开头,11位数字
-            if (preg_match('/^1[3|4|5|7|8|9]\d{9}$/', $v)) {
-                return ['', $v];
-            }
-            return ['格式错误', ''];
-        });
+        $v = $this->getStringMust($name, $msg);
+        // 正则,1开头,11位数字
+        if (!preg_match('/^1[3|4|5|7|8|9]\d{9}$/', $v)) {
+            trigger_error('手机号码格式错误', E_USER_ERROR);
+        }
+
+        return $v;
     }
 
+    /**
+     * 从请求参数中获取手机号码,可以缺省
+     * @param string $name
+     * @param string $default
+     * @return string
+     */
+    protected function getMobile(string $name = 'mobile', string $default = ''): string
+    {
+        $v = $this->getString($name, $default);
+        // 正则,1开头,11位数字
+        if ($v and !preg_match('/^1[3|4|5|7|8|9]\d{9}$/', $v)) {
+            trigger_error('手机号码格式错误', E_USER_ERROR);
+        }
+
+        return $v;
+    }
 
     /**
      * 从请求参数中获取手机号码,
