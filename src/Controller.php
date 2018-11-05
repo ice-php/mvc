@@ -627,25 +627,36 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取一个金额
+     * 从请求参数中获取一个金额,必须提供
+     * @param string $name 参数名
+     * @param string $msg 错误信息
+     * @return float
+     */
+    protected function getMoneyMust(string $name = 'money', string $msg = ''): float
+    {
+        $v = $this->getFloatMust($name, $msg);
+
+        if (!preg_match('/^\-?\d+(\.\d{1,2})?$/', $v)) {
+            trigger_error('金额格式错误', E_USER_ERROR);
+        }
+        return $v;
+    }
+
+    /**
+     * 从请求参数中获取一个金额,可以缺省
      * @param string $name 参数名
      * @param float $default 缺省值
      * @return float
      */
-    protected function getMoney(string $name = 'money', float $default = null): ?float
+    protected function getMoney(string $name = 'money', float $default = 0): float
     {
-        return self::getCommon('金额', $name, $default, function ($v) {
-            if (!is_numeric($v)) {
-                return ['必须是数值', null];
-            }
+        $v = $this->getFloat($name, $default);
 
-            if (!preg_match('/^\-?\d+(\.\d{1,2})?$/', $v)) {
-                return ['格式错误', null];
-            }
 
-            $v = floatval($v);
-            return $v;
-        });
+        if (!preg_match('/^\-?\d+(\.\d{1,2})?$/', $v)) {
+            trigger_error('金额格式错误', E_USER_ERROR);
+        }
+        return $v;
     }
 
     /**
