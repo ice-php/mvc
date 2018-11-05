@@ -501,27 +501,27 @@ abstract class Controller
     }
 
     /**
-     * 从请求参数中获取一个布尔值 (0/1)
-     * @param string $name 参数名
-     * @param bool $default 缺省值
+     * 从请求参数中获取一个必须的布尔参数:1/on/是/true/0/off/否/false
+     * @param string $name 参数名称
+     * @param string $msg 错误提示
      * @return bool
      */
-    protected function getBoolean(string $name, bool $default = null): bool
+    protected function getBoolean(string $name, string $msg = ''): bool
     {
-        return self::getCommon('', $name, $default, function ($v) {
-            //真
-            if ($v == 1 or $v == 'on' or $v == '是' or $v == 'true') {
-                return ['', true];
-            }
+        $v = $this->getMust($name, $msg);
 
-            //假
-            if ($v == 'off' or $v === '0' or $v == '否' or $v == 'false') {
-                return ['', false];
-            }
+        //真
+        if ($v == 1 or $v == 'on' or $v == '是' or $v == 'true') {
+            return true;
+        }
 
-            // 只允许以上两个值
-            return ['取值不在允许范围内', ''];
-        });
+        //假
+        if ($v == 'off' or $v === '0' or $v == '否' or $v == 'false') {
+            return false;
+        }
+
+        trigger_error('参数:' . $name . ' 取值错误', E_USER_ERROR);
+        return false;
     }
 
     /**
