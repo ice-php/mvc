@@ -544,7 +544,7 @@ abstract class Controller
     protected function getFloatMust(string $name, string $msg = ''): float
     {
         $v = $this->getStringMust($name, $msg);
-        if (false == filter_var($v, FILTER_VALIDATE_FLOAT)) {
+        if (false === filter_var($v, FILTER_VALIDATE_FLOAT)) {
             trigger_error($msg ?: "参数:$name 必须是一个浮点数", E_USER_ERROR);
         }
         return floatval($v);
@@ -559,7 +559,7 @@ abstract class Controller
     protected function getFloat(string $name, float $default = 0): float
     {
         $v = $this->getString($name, $default . '');
-        if (false == filter_var($v, FILTER_VALIDATE_FLOAT)) {
+        if (false === filter_var($v, FILTER_VALIDATE_FLOAT)) {
             trigger_error("参数:$name 必须是一个浮点数", E_USER_ERROR);
         }
         return floatval($v);
