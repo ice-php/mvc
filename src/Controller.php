@@ -869,7 +869,7 @@ abstract class Controller
      * @param string $default 默认值
      * @return string
      */
-    protected function getHtml(string $name, string $default = null): string
+    protected function getHtml(string $name, string $default = ''): string
     {
         //取值
         $v = $this->getOneBase($name);
