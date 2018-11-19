@@ -808,9 +808,22 @@ abstract class Controller
      */
     static private function codeError(string $v): bool
     {
+        //取配置中允许的字符
         $special = configDefault('', 'anti', 'utf-8');
-        return iconv('utf-8', 'gb2312', str_replace($special, '', $v)) === false
-            and iconv('utf-8', 'gbk', str_replace($special, '', $v)) === false;
+
+        //将允许的字符过滤掉
+        $replaced = str_replace($special, '', $v);
+
+        //如果转换成GB2312 或 GBK 成功 , 则返回 无错
+        if (iconv('utf-8', 'gb2312', $replaced) !== false or iconv('utf-8', 'gbk', $replaced) !== false) {
+            return false;
+        };
+
+        //记录错误日志
+        writeLog('codeError', $v);
+
+        //返回有错
+        return true;
     }
 
     /**
