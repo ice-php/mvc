@@ -530,7 +530,7 @@ final class Template
      */
     static private function pathUpload(): string
     {
-        return self::pathRoot() . configDefault('/upload/','upload', 'path');
+        return self::pathRoot() . configDefault('/upload/', 'upload', 'path');
     }
 
     /**
@@ -581,6 +581,11 @@ final class Template
         return md5(json($names));
     }
 
+    private static function appendVer(string $path): string
+    {
+        return $path . '?v=' . configDefault('0', 'system', 'version');
+    }
+
     /**
      * 在模板中包含样式文件
      * 可变参数: 样式文件名称列表
@@ -599,10 +604,8 @@ final class Template
             // 构造CSS文件的URL
             $url = self::pathRoot() . self::dirCss($files[0]);
 
-            // 调试模式下,加上一个版本号
-            if (isDebug()) {
-                $url .= '?v=' . configDefault('0','system', 'version');
-            }
+            // 附加一个版本号
+            $url = self::appendVer($url);
 
             // 返回HTML包含CSS的语法
             return "<link rel='stylesheet' type='text/css' href='$url' media='all'/>\n";
@@ -639,8 +642,7 @@ final class Template
         }
 
         // 返回包含这合并文件的脚本语句
-
-        $url = self::pathRoot() . $cachePath;
+        $url = self::appendVer(self::pathRoot() . $cachePath);
         return "<link rel='stylesheet' type='text/css' href='$url'  media='all'/>\n";
     }
 
@@ -706,9 +708,7 @@ final class Template
             $url = self::pathRoot() . self::dirJs($files[0]);
 
             // 调试模式,加上版本号
-            if (isDebug()) {
-                $url .= '?v=' . configDefault('0','system', 'version');
-            }
+            $url = self::appendVer($url);
 
             // 构造 HTML中的JS包含语法
             return "<script type='text/javascript' src='$url'></script>\n";
@@ -745,7 +745,7 @@ final class Template
             write($cacheDir, $content);
         }
 
-        $url = self::pathRoot() . $cachePath;
+        $url = self::appendVer(self::pathRoot() . $cachePath);
         return "<script type='text/javascript' src='$url'></script>\n";
     }
 
