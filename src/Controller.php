@@ -745,7 +745,7 @@ abstract class Controller
      */
     protected function getEmail(string $name = 'email', string $default = ''): string
     {
-        $v = $this->getStringMust($name, $default);
+        $v = $this->getString($name, $default);
         if ($v and false === filter_var($v, FILTER_VALIDATE_EMAIL)) {
             trigger_error('邮箱格式错误', E_USER_ERROR);
         }
